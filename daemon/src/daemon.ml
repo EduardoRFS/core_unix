@@ -77,13 +77,13 @@ let daemonize ?(redirect_stdout=`Dev_null) ?(redirect_stderr=`Dev_null)
   (* Fork into the background, parent exits, child continues. *)
   fork_no_parent ();
   (* Become session leader. *)
-  ignore (Unix.Terminal_io.setsid ());
+  ignore ((Unix.Terminal_io.setsid ()): int);
   (* Fork again to ensure that we will never regain a controlling terminal. *)
   fork_no_parent ();
   (* Release old working directory. *)
   Unix.chdir cd;
   (* Ensure sensible umask.  Adjust as needed. *)
-  Option.iter umask ~f:(fun umask -> ignore (Unix.umask umask));
+  Option.iter umask ~f:(fun umask -> ignore ((Unix.umask umask): int));
   redirect_stdio_fds ?perm ~stdout:redirect_stdout ~stderr:redirect_stderr ();
 ;;
 
@@ -102,7 +102,7 @@ let daemonize_wait
   check_threads ~allow_threads_to_have_been_created;
   match Unix.handle_unix_error Unix.fork with
   | `In_the_child ->
-    ignore (Unix.Terminal_io.setsid ());
+    ignore ((Unix.Terminal_io.setsid ()): int);
     let read_end, write_end = Unix.pipe () in
     let buf = "done" in
     let len = String.length buf in
@@ -111,7 +111,7 @@ let daemonize_wait
       (* The process that will become the actual daemon. *)
       Unix.close read_end;
       Unix.chdir cd;
-      Option.iter umask ~f:(fun umask -> ignore (Unix.umask umask));
+      Option.iter umask ~f:(fun umask -> ignore ((Unix.umask umask): int));
       Staged.stage (fun () ->
         redirect_stdio_fds ?perm ~stdout:redirect_stdout ~stderr:redirect_stderr ();
         let old_sigpipe_behavior = Signal.Expert.signal Signal.pipe `Ignore in

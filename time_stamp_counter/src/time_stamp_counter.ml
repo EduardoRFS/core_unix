@@ -287,7 +287,7 @@ module Calibrator = struct
       if Int.( = ) n 1
       then [ sample ]
       else (
-        ignore (Unix.nanosleep sleep);
+        (ignore ((Unix.nanosleep sleep) : float));
         sample :: loop (n - 1) (sleep +. interval))
     in
     loop num_samples interval

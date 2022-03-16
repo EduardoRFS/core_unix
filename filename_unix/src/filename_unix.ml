@@ -10,7 +10,7 @@ let create_arg_type ?key of_string =
       let command = sprintf "bash -c 'compgen -f %s'" part in
       let chan_in = Unix.open_process_in command in
       let completions = In_channel.input_lines chan_in in
-      ignore (Unix.close_process_in chan_in);
+      ignore ((Unix.close_process_in chan_in): Unix.process_status);
       List.map (List.sort ~compare:String.compare completions) ~f:(fun comp ->
         match Sys_unix.is_directory comp with
         | `Yes -> comp ^ "/"
